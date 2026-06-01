@@ -13,7 +13,9 @@ La interfície web de la plataforma està organitzada en quatre parts principals
 * **Simulació + Superfície**: permet unir una simulació correcta amb una superfície guardada.
 * **Simulacions anteriors**: permet consultar, reutilitzar, descarregar o eliminar simulacions ja fetes.
 
-Aquest repositori no conté tot el codi de la plataforma. Per motius de confidencialitat de l’empresa, només s’han publicat alguns fitxers relacionats amb l’API, els serveis principals i els agents. Tot i això, la descripció general explica el projecte complet per donar context al treball.
+Aquest repositori no conté tot el codi de la plataforma. Per motius de confidencialitat de l’empresa, només s’han publicat alguns fitxers representatius relacionats amb l’API, els serveis principals, les fórmules de simulació, els agents MCP i els tests associats a la carpeta `services`.
+
+Els tests inclosos corresponen únicament a aquesta part perquè és on es concentra la lògica principal del backend: la creació i execució de simulacions, el càlcul de fórmules, la gestió d’escenaris, el context del sòl, les alarmes i la comunicació amb l’orquestrador. D’aquesta manera, es mostra la validació automàtica de les parts més rellevants del sistema sense publicar la totalitat del projecte ni altres mòduls interns no inclosos al repositori.
 
 ## Funcionament general
 
@@ -65,9 +67,7 @@ En aquest repositori només apareix una part del projecte. Els fitxers publicats
 ### Fórmules
 
 * `src/services/formulas/soil.formulas.ts`: conté les fórmules del sòl, l’aigua, la temperatura, els nutrients, el TDS, l’EC i el pH.
-* `src/services/formulas/fao-phase.formulas.ts`: agrupa fórmules relacionades amb la fase FAO del cultiu.
 * `src/services/formulas/compo-phase.formulas.ts`: converteix dosis i freqüències de catàleg en valors útils per a la simulació.
-* `src/services/formulas/compo-npk.formulas.ts`: passa de producte aplicat a quantitats de N, P i K.
 * `src/services/formulas/fao-npk.formulas.ts`: reparteix el N, P i K de la fase FAO segons les proporcions definides per al cultiu.
 * `src/services/formulas/events.formulas.ts`: construeix el pla diari de reg i fertirrigació.
 * `src/services/formulas/charge-equivalents.formulas.ts`: calcula els equivalents de càrrega anió i catió dels fertilitzants.
@@ -87,6 +87,33 @@ En aquest repositori només apareix una part del projecte. Els fitxers publicats
 * `src/agents/simulation/server.py`: arrenca el servidor MCP de simulació.
 * `src/agents/soil/router.py`: defineix la tool per resoldre el context del sòl.
 * `src/agents/soil/server.py`: arrenca el servidor MCP del sòl.
+
+### Tests
+
+* `src/services/tests/agent/TestAgentIndex.test.ts`: comprova el punt d’entrada del mòdul d’agents i valida que les exportacions principals estiguin disponibles correctament.
+* `src/services/tests/agent/TestOrchestratorService.test.ts`: comprova el servei de l’orquestrador, incloent l’enviament de peticions al servidor Python i l’adaptació de la resposta.
+* `src/services/tests/agent/TestOrchestratorTypes.test.ts`: valida els esquemes i tipus utilitzats en les peticions i respostes de l’orquestrador.
+
+* `src/services/tests/executions/TestExecutionsServiceClimate.test.ts`: comprova la lectura, generació i persistència de dades climàtiques associades a una execució.
+* `src/services/tests/executions/TestExecutionsServiceCreate.test.ts`: comprova la creació d’una execució nova, la preparació de les dades inicials i la inicialització de la simulació.
+* `src/services/tests/executions/TestExecutionsServiceCropSuitability.test.ts`: comprova si les condicions climàtiques i del sòl són adequades per al cultiu.
+* `src/services/tests/executions/TestExecutionsServicePlantacioPlan.test.ts`: comprova la generació i el desat del pla de plantació a partir dels resultats d’una execució.
+* `src/services/tests/executions/TestExecutionsServiceRead.test.ts`: comprova la lectura d’execucions, resultats, dades associades i operacions de consulta.
+* `src/services/tests/executions/TestExecutionsServiceRuntime.test.ts`: comprova l’execució diària de la simulació, incloent el càlcul de reg, sòl, clima i fertilització.
+* `src/services/tests/executions/TestExecutionsServiceUtils.test.ts`: comprova funcions auxiliars utilitzades per les execucions, com el tractament de dates, càlculs i lectura de dades.
+
+* `src/services/tests/formulas/TestChargeEquivalentsFormulas.test.ts`: comprova les fórmules relacionades amb els equivalents de càrrega d'anions i cations dels fertilitzants.
+* `src/services/tests/formulas/TestCompoPhaseFormulas.test.ts`: comprova la conversió de dosis, freqüències i valors de catàleg COMPO en dades utilitzables per la simulació.
+* `src/services/tests/formulas/TestEventsFormulas.test.ts`: comprova la generació d’esdeveniments diaris de reg i fertirrigació.
+* `src/services/tests/formulas/TestFaoNpkFormulas.test.ts`: comprova el repartiment de N, P i K segons les necessitats de la fase FAO i les proporcions definides.
+* `src/services/tests/formulas/TestSoilFormulas.test.ts`: comprova les fórmules del sòl, el balanç hídric, la temperatura, els nutrients, el TDS, l’EC i el pH.
+
+* `src/services/tests/ml/TestCatboostFaoService.test.ts`: comprova el servei encarregat de preparar dades i interactuar amb el model CatBoost relacionat amb paràmetres FAO.
+* `src/services/tests/ml/TestSoilTextureService.test.ts`: comprova el servei de classificació de textura del sòl.
+
+* `src/services/tests/TestAlarmsService.test.ts`: comprova la creació d’alarmes quan es detecten valors fora de rang o errors durant la simulació.
+* `src/services/tests/TestScenarioService.test.ts`: comprova el càlcul d’opcions de superfície, la generació d’escenaris i la seva recuperació posterior.
+* `src/services/tests/TestSoilService.test.ts`: comprova la resolució del context del sòl a partir de coordenades o ubicació i la classificació de la textura del sòl.
 
 ## Com es reparteix la feina
 
